@@ -28,7 +28,12 @@ module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
   cardSchema
     .findByIdAndRemove(cardId)
-    .then((card) => res.status(200).send(card))
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+      }
+      return res.status(200).send(card);
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({
