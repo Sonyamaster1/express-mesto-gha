@@ -46,27 +46,24 @@ module.exports.getUserById = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   userSchema
-    .findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+    .findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        return res.status(400).send({
           message: 'Переданы некорректные данные при обновлении профиля.',
         });
-      } else if (err.name === 'CastError') {
-        res.status(404).send({
-          message: 'Передан несуществующий _id карточки.',
-        });
-      } else {
-        res.status(500).send({ message: err.message });
+      } if (err.message === 'NotFound') {
+        return res.status(404).send({ message: 'Пользователь не найден' });
       }
+      return res.status(500).send({ message: 'Ошибка по умолчанию' });
     });
 };
 // обновление аватара
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   userSchema
-    .findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    .findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
