@@ -47,6 +47,7 @@ module.exports.getLikes = (req, res) => {
       { $addToSet: { likes: req.user._id } },
       { new: true },
     )
+    .orFail(new Error('NotFound'))
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -54,7 +55,7 @@ module.exports.getLikes = (req, res) => {
           message: 'Переданы некорректные данные для постановки лайка',
         });
       } if (err.message === 'NotFound') {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+        res.status(400).send({ message: 'Передан несуществующий _id карточки' });
       }
       return res.status(500).send({ message: 'Ошибка по умолчанию' });
     });
@@ -67,6 +68,7 @@ module.exports.deleteLikes = (req, res) => {
       { $pull: { likes: req.user._id } },
       { new: true },
     )
+    .orFail(new Error('NotFound'))
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {

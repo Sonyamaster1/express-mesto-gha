@@ -30,6 +30,7 @@ module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
   userSchema
     .findById(userId)
+    .orFail(new Error('NotFound'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
