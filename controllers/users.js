@@ -12,7 +12,7 @@ module.exports.createUsers = (req, res) => {
   const { name, about, avatar } = req.body;
   userSchema
     .create({ name, about, avatar })
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res
@@ -54,8 +54,6 @@ module.exports.updateUser = (req, res) => {
         return res.status(400).send({
           message: 'Переданы некорректные данные при обновлении профиля.',
         });
-      } if (err.message === 'NotFound') {
-        return res.status(404).send({ message: 'Пользователь не найден' });
       }
       return res.status(500).send({ message: 'Ошибка по умолчанию' });
     });
@@ -67,13 +65,9 @@ module.exports.updateAvatar = (req, res) => {
     .findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(400).send({
-          message: 'Переданы некорректные данные при обновлении аватара.',
-        });
-      } else if (err.name === 'CastError') {
-        res.status(404).send({
-          message: 'Пользователь с указанным _id не найден. ',
+          message: 'Переданы некорректные данные при обновлении профиля.',
         });
       } else {
         res.status(500).send({ message: err.message });
