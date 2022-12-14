@@ -1,5 +1,3 @@
-const express = require('express');
-
 const userRoutes = require('express').Router();
 
 const {
@@ -12,7 +10,7 @@ const {
 
 userRoutes.get('/', getUsers);
 userRoutes.get('/:userId', getUserById);
-userRoutes.post('/', express.json(), createUsers);
-userRoutes.patch('/me', express.json(), updateUser);
-userRoutes.patch('/me/avatar', express.json(), updateAvatar);
+userRoutes.post('/', createUsers);
+userRoutes.patch('/me', updateUser);
+userRoutes.patch('/me/avatar', updateAvatar);
 module.exports = userRoutes;
