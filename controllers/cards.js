@@ -31,7 +31,7 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({
+        res.status(400).send({
           message: 'Карточка с указанным _id не найдена.',
         });
       } else {
@@ -71,7 +71,7 @@ module.exports.deleteLikes = (req, res) => {
     .orFail(new Error('NotFound'))
     .then((card) => res.status(200).send(card))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res.status(400).send({
           message: 'Переданы некорректные данные для снятия лайка',
         });
