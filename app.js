@@ -2,12 +2,20 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const router = require('./routes');
+// const auth = require('./middlewares/auth');
 
 const app = express();
 
 app.use(bodyParser.json());
+const { validationCreateUser, validationLogin } = require('./middlewares/validation');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
+const { createUsers, login } = require('./controllers/users');
+
+app.post('/signin', login, validationLogin);
+app.post('/signup', createUsers, validationCreateUser);
+app.use(router);
+// app.use(auth);
 
 async function connect() {
   try {
@@ -20,13 +28,6 @@ async function connect() {
     console.log(err);
   }
 }
-app.use((req, res, next) => {
-  req.user = {
-    _id: '639717c5c9a79c3d523a243e',
-  };
-  next();
-});
 
 // подключаем роуты
-app.use(router);
 connect();
