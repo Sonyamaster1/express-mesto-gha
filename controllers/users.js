@@ -63,11 +63,18 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch(next);
 };
 // текущий пользователь
-module.exports.getCurrentUser = (res, req, next) => {
-  userSchema
-    .findById(req.user._id).orFail(() => {
+module.exports.getCurrentUser = (req, res, next) => {
+  userSchema.findById(req.user._id)
+    .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
     .then((user) => res.status(200).send({ user }))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(BadRequest('Переданы некорректные данные'));
+      } else if (err.message === 'NotFound') {
+        next(new NotFound('Пользователь не найден'));
+      }
+    })
     .catch(next);
 };
