@@ -9,7 +9,6 @@ module.exports.createUsers = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!email || !password) throw new BadRequest('Email или пароль не могут быть пустыми');
   bcrypt.hash(password, 10).then((hash) => {
     userSchema
       .create({

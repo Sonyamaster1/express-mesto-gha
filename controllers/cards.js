@@ -55,9 +55,9 @@ module.exports.getLikes = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest('Переданы некорректные данные для постановки лайка'));
+        return next(new BadRequest('Переданы некорректные данные для постановки лайка'));
       }
-      next(err);
+      return next(err);
     });
 };
 // убрать лайк
@@ -76,8 +76,8 @@ module.exports.deleteLikes = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest('Переданы некорректные данные для постановки лайка'));
+        return next(new BadRequest('Переданы некорректные данные для постановки лайка'));
       }
-      next(err);
+      return next(err);
     });
 };

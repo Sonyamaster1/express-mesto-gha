@@ -45,9 +45,8 @@ module.exports.updateUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(BadRequest('Переданы некорректные данные при обновлении профиля.'));
-      }
-    })
-    .catch(next);
+      } else next(err);
+    });
 };
 // обновление аватара
 module.exports.updateAvatar = (req, res, next) => {
@@ -61,10 +60,9 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequest('Переданы некорректные данные при обновлении профиля.');
-      }
-    })
-    .catch(next);
+        next(new BadRequest('Переданы некорректные данные при обновлении профиля.'));
+      } else next(err);
+    });
 };
 // текущий пользователь
 module.exports.getCurrentUser = (req, res, next) => {
@@ -80,7 +78,6 @@ module.exports.getCurrentUser = (req, res, next) => {
         next(BadRequest('Переданы некорректные данные'));
       } else if (err.message === 'NotFound') {
         next(new NotFound('Пользователь не найден'));
-      }
-    })
-    .catch(next);
+      } else next(err);
+    });
 };

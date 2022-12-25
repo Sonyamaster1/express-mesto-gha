@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const router = require('./routes');
@@ -17,6 +19,14 @@ app.post('/signin', validationLogin, login);
 app.post('/signup', validationCreateUser, createUsers);
 app.use(auth);
 app.use(router);
+app.use(helmet());
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
 async function connect() {
   try {
     await mongoose.set('strictQuery', false);
