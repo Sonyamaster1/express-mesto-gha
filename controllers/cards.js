@@ -18,10 +18,11 @@ module.exports.createCards = (req, res, next) => {
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequest('Переданы некорректные данные при создании карточки');
+        next(new BadRequest('Переданы некорректные данные при создании карточки'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 // удаляем карточку
 module.exports.deleteCard = (req, res, next) => {
@@ -31,7 +32,7 @@ module.exports.deleteCard = (req, res, next) => {
       throw new NotFound('Карточка с указанным _id не найдена');
     })
     .then((card) => {
-      if (!card.owner.equals(req.user._id)) { // ошибка тут при удалении карточки
+      if (!card.owner.equals(req.user._id)) {
         return next(new CurrentErr('Вы не можете удалить чужую карточку'));
       }
       return card.remove().then(() => res.send({ message: 'Карточка успешно удалена' }));
@@ -51,10 +52,10 @@ module.exports.getLikes = (req, res, next) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequest('Переданы некорректные данные для постановки лайка');
+        next(new BadRequest('Переданы некорректные данные для постановки лайка'));
       }
       if (err.message === 'NotFound') {
-        throw new NotFound('Передан несуществующий _id карточки');
+        next(new NotFound('Передан несуществующий _id карточки'));
       }
     })
     .catch(next);
@@ -72,10 +73,10 @@ module.exports.deleteLikes = (req, res, next) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequest('Переданы некорректные данные для снятия лайка');
+        next(new BadRequest('Переданы некорректные данные для снятия лайка'));
       }
       if (err.message === 'NotFound') {
-        throw new NotFound('Передан несуществующий _id карточки');
+        next(new NotFound('Передан несуществующий _id карточки'));
       }
     })
     .catch(next);

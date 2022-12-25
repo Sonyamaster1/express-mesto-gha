@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const router = require('./routes');
 const auth = require('./middlewares/auth');
 
@@ -27,7 +28,8 @@ async function connect() {
     console.log(err);
   }
 }
-/* app.use((err, req, res, next) => {
+app.use(errors());
+app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({
     message: statusCode === 500
@@ -35,6 +37,6 @@ async function connect() {
       : message,
   });
   next();
-}); */
+});
 // подключаем роуты
 connect();
