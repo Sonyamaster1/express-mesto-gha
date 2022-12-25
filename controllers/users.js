@@ -12,19 +12,20 @@ module.exports.getUsers = (req, res, next) => {
 // ищем по ID
 module.exports.getUserById = (req, res, next) => {
   const { userId } = req.params;
-  userSchema
-    .findById(userId)
-    .orFail(new NotFound('Пользователь по указанному _id не найден'))
-    .then((user) => res.send(user))
+  userSchema.findById(userId)
+    .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest('Переданы некорректные данные'));
+        next(new BadRequest('Передан некорретный Id'));
+        return;
       }
-      if (err.message === 'NotFound') {
-        next(new NotFound('Пользователь по указанному _id не найден'));
-      }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 // обновить данные
 module.exports.updateUser = (req, res, next) => {
