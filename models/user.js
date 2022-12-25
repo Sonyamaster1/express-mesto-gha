@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const isUrl = require('validator/lib/isURL');
-const isEmail = require('validator/lib/isEmail');
+const validator = require('validator');
+// const isUrl = require('validator/lib/isURL');
+// const isEmail = require('validator/lib/isEmail');
 const AuthErr = require('../errors/AuthErr');
 
 const userSchema = new mongoose.Schema({
@@ -21,16 +22,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (url) => isUrl(url),
+      validator: (url) => validator.isURL(url),
       message: 'Некорректный адрес URL',
     },
   },
   email: {
-    unique: true,
     type: String,
     required: true,
+    unique: true,
     validate: {
-      validator: (email) => isEmail(email),
+      validator: (email) => validator.isEmail(email),
       message: 'Некорректый адрес почты',
     },
   },
@@ -40,8 +41,8 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 });
-// models/user.js
 
+// eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
@@ -57,7 +58,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
         });
     });
 };
-
+// models/user.js
 module.exports = mongoose.model('user', userSchema);
 
 module.exports = mongoose.model('user', userSchema);
