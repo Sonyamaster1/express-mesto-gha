@@ -28,10 +28,10 @@ module.exports.createCards = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   return cardSchema.findById(cardId)
-    .orFail(() => {
-      throw new NotFound('Карточка с указанным _id не найдена');
-    })
     .then((card) => {
+      if (!card) {
+        throw new NotFound('Пользователь не найден');
+      }
       if (!card.owner.equals(req.user._id)) {
         return next(new CurrentErr('Вы не можете удалить чужую карточку'));
       }
@@ -46,10 +46,13 @@ module.exports.getLikes = (req, res, next) => {
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
       { new: true },
-    ).orFail(() => {
-      throw new NotFound('Передан несуществующий _id карточки');
+    )
+    .then((card) => {
+      if (!card) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.send({ data: card });
     })
-    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные для постановки лайка'));
@@ -67,10 +70,13 @@ module.exports.deleteLikes = (req, res, next) => {
       req.params.cardId,
       { $pull: { likes: req.user._id } },
       { new: true },
-    ).orFail(() => {
-      throw new NotFound('Передан несуществующий _id карточки');
+    )
+    .then((card) => {
+      if (!card) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.send({ data: card });
     })
-    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные для снятия лайка'));

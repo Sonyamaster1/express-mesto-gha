@@ -35,10 +35,13 @@ module.exports.updateUser = (req, res, next) => {
       req.user._id,
       { name, about },
       { new: true, runValidators: true },
-    ).orFail(() => {
-      throw new NotFound('Пользователь с указанным _id не найден');
+    )
+    .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.status(200).send(user);
     })
-    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(BadRequest('Переданы некорректные данные при обновлении профиля.'));
@@ -66,10 +69,12 @@ module.exports.updateAvatar = (req, res, next) => {
 // текущий пользователь
 module.exports.getCurrentUser = (req, res, next) => {
   userSchema.findById(req.user._id)
-    .orFail(() => {
-      throw new NotFound('Пользователь не найден');
+    .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.status(200).send(user);
     })
-    .then((user) => res.status(200).send({ user }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(BadRequest('Переданы некорректные данные'));
