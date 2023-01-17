@@ -1,5 +1,5 @@
-# Проект Mesto backend
-### Сервис по обмену фотографиями, созданный в рамках обучения в Яндекс.Практикум (Веб-разработчик).
+# Проект Mesto (backend)
+Backend часть сервиса, с помощью которого пользователь может делиться фото с другими.
 ---
 [![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
 ---
